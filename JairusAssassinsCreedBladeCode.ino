@@ -1,30 +1,30 @@
-#define button1Pin 2
-#define blade1Sol1OutPin 4
-#define blade1Sol2OutPin 5
-#define button2Pin 3
-#define blade2Sol1OutPin 6
-#define blade2Sol2OutPin 7
+#define boPin 2
+#define boSoPin 4
+#define boStPin 5
+#define btPin 3
+#define btSoPin 6
+#define btStPin 7
 
 
-int button1State = HIGH;
-int button2State = HIGH;
-int lastButton1State = HIGH;
-int lastButton2State = HIGH;
-int currentBlade1State = 0;
-int currentBlade2State = 0;
+int boState = HIGH;
+int btState = HIGH;
+int lBoState = HIGH;
+int lBtState = HIGH;
+int cBoState = 0;
+int cBtState = 0;
 
-const unsigned long debounceDuration = 20; // This controls button debounce duration. 
-const unsigned long bladeRetractTime = 300; // adjust this if we're stabbing produce. @jairus 
-const unsigned long bladeSoldDelay = 100; // This controls how long till we switch between the extending solenoid and the retracting solenoid. 
+const unsigned long debD = 20; // This controls button debounce duration. 
+const unsigned long bRetractTime = 300; // adjust this if we're stabbing produce. @jairus 
+const unsigned long bSDelay = 100; // This controls how long till we switch between the extending solenoid and the retracting solenoid. 
 
-unsigned long debounce1TimeStamp = 0;
-unsigned long debounce2TimeStamp = 0;
+unsigned long debounceTsO = 0;
+unsigned long debounceTsT = 0;
 
-unsigned long blade1SolTS = 0;
-unsigned long blade2SolTS = 0;
+unsigned long boSolTs = 0;
+unsigned long btSolTs = 0;
 
-unsigned long blade1Timer = 0;
-unsigned long blade2Timer = 0;
+unsigned long boTs = 0;
+unsigned long btTS = 0;
 
 void setup() {
   pinMode(blade1Sol1OutPin, OUTPUT);
