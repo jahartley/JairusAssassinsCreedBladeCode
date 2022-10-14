@@ -24,125 +24,125 @@ unsigned long boSolTs = 0;
 unsigned long btSolTs = 0;
 
 unsigned long boTs = 0;
-unsigned long btTS = 0;
+unsigned long btTs = 0;
 
 void setup() {
-  pinMode(blade1Sol1OutPin, OUTPUT);
-  pinMode(blade1Sol2OutPin, OUTPUT);
-  pinMode(button1Pin, INPUT_PULLUP);
-  pinMode(blade2Sol1OutPin, OUTPUT);
-  pinMode(blade2Sol2OutPin, OUTPUT);
-  pinMode(button2Pin, INPUT_PULLUP);
+  pinMode(boSoPin, OUTPUT);
+  pinMode(boStPin, OUTPUT);
+  pinMode(boPin, INPUT_PULLUP);
+  pinMode(btSoPin, OUTPUT);
+  pinMode(btStPin, OUTPUT);
+  pinMode(btPin, INPUT_PULLUP);
 }
 
 
 void loop() {
 
-  int b1reading = digitalRead(button1Pin);
-  int b2reading = digitalRead(button2Pin);
+  int boReading = digitalRead(boPin);
+  int btReading = digitalRead(btPin);
 
   unsigned long now = millis();
 
-  if (b1reading != lastButton1State) {
+  if (boReading != lBoState) {
     // reset the debouncing timer
-    debounce1TimeStamp = now;
+    debounceTsO = now;
   }
-  if (b2reading != lastButton2State) {
+  if (btReading != lBtState) {
     // reset the debouncing timer
-    debounce2TimeStamp = now;
+    debounceTsT = now;
   }
 
-  if ((now - debounce1TimeStamp) > debounceDuration) {
+  if ((now - debounceTsO) > debD) {
     // whatever the reading is at, it's been there for longer than the debounce
     // delay, so take it as the actual current state:
 
     // if the button state has changed:
-    if (b1reading != button1State) {
-      button1State = b1reading;
+    if (boReading != boState) {
+      boState = boReading;
 
       // only toggle the blade if the new button state is LOW
-      if (button1State == LOW) {
+      if (boState == LOW) {
         //UPDATE BLADE STATE MACHINE HERE...
-        if (currentBlade1State == 0) {
-          currentBlade1State = 1;
+        if (cBoState == 0) {
+          cBoState = 1;
         } else {
-          currentBlade1State = 2;
+          cBoState = 2;
         }
       }
     }
   }
-  lastButton1State = b1reading;
+  lBoState = boReading;
 
-  if ((now - debounce2TimeStamp) > debounceDuration) {
+  if ((now - debounceTsT) > debD) {
     // whatever the reading is at, it's been there for longer than the debounce
     // delay, so take it as the actual current state:
 
     // if the button state has changed:
-    if (b2reading != button2State) {
-      button2State = b2reading;
+    if (btReading != btState) {
+      btState = btReading;
 
       // only toggle the blade if the new button state is LOW
-      if (button2State == LOW) {
+      if (btState == LOW) {
         //UPDATE BLADE STATE MACHINE HERE...
-        if (currentBlade2State == 0) {
-          currentBlade2State = 1;
+        if (cBtState == 0) {
+          cBtState = 1;
         } else {
-          currentBlade2State = 2;
+          cBtState = 2;
         }
       }
     }
   }
-  lastButton2State = b2reading;
+  lBtState = btReading;
   
   //Blade1 State Machine
-  if (currentBlade1State >= 4) {
-    if (now - blade1Timer > bladeRetractTime) {
-      currentBlade1State = 0;
+  if (cBoState >= 4) {
+    if ((now - boTs) > bRetractTime) {
+      cBoState = 0;
     }
   }
-  if (currentBlade1State == 3) {
-    if (now - blade1SolTS > bladeSoldDelay) {
-        digitalWrite(blade1Sol2OutPin, LOW);
-        blade1Timer = now;
-        currentBlade1State = 4;
+  if (cBoState == 3) {
+    if ((now - boSolTs) > bSDelay) {
+        digitalWrite(boStPin, LOW);
+        boTs = now;
+        cBoState = 4;
       }
   }
-  if (currentBlade1State == 2) {
-      digitalWrite(blade1Sol1OutPin, HIGH);
-      blade1SolTS = now;
-      currentBlade1State = 3;
+  if (cBoState == 2) {
+      digitalWrite(boSoPin, HIGH);
+      boSolTs = now;
+      cBoState = 3;
   }
-  if (currentBlade1State == 1) {
-    digitalWrite(blade1Sol1OutPin, LOW);
+  if (cBoState == 1) {
+    digitalWrite(boSoPin, LOW);
   }
-  if (currentBlade1State == 0) {
-    digitalWrite(blade1Sol1OutPin, HIGH);
-    digitalWrite(blade1Sol2OutPin, HIGH);
+  if (cBoState == 0) {
+    digitalWrite(boSoPin, HIGH);
+    digitalWrite(boStPin, HIGH);
   }
   
   //Blade2 State Machine
-  if (currentBlade2State >= 4) {
-    if (now - blade2Timer > bladeRetractTime) {
-      currentBlade2State = 0;
+  if (cBtState >= 4) {
+    if ((now - btTs) > bRetractTime) {
+      cBtState = 0;
     }
   }
-  if (currentBlade2State == 3) {
-    if (now - blade2SolTS > bladeSoldDelay) {
-        digitalWrite(blade2Sol2OutPin, LOW);
-        blade2Timer = now;
-        currentBlade2State = 4;
+  if (cBtState == 3) {
+    if ((now - btSolTs) > bSDelay) {
+        digitalWrite(btStPin, LOW);
+        btTs = now;
+        cBtState = 4;
       }
   }
-  if (currentBlade2State == 2) {
-      digitalWrite(blade2Sol1OutPin, HIGH);
-      blade2SolTS = now;
-      currentBlade2State = 3;
+  if (cBtState == 2) {
+      digitalWrite(btSoPin, HIGH);
+      btSolTs = now;
+      cBtState = 3;
   }
-  if (currentBlade2State == 1) {
-    digitalWrite(blade2Sol1OutPin, LOW);
+  if (cBtState == 1) {
+    digitalWrite(btSoPin, LOW);
   }
-  if (currentBlade2State == 0) {
-    digitalWrite(blade2Sol1OutPin, HIGH);
-    digitalWrite(blade2Sol2OutPin, HIGH);
+  if (cBtState == 0) {
+    digitalWrite(btSoPin, HIGH);
+    digitalWrite(btStPin, HIGH);
   }
 }
