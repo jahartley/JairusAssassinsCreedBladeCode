@@ -95,7 +95,7 @@ void loop() {
   lastButton2State = b2reading;
   
   //Blade1 State Machine
-  if (currentBlade1State == 4) {
+  if (currentBlade1State >= 4) {
     if (now - blade1Timer > bladeRetractTime) {
       currentBlade1State = 0;
     }
@@ -121,7 +121,7 @@ void loop() {
   }
   
   //Blade2 State Machine
-  if (currentBlade2State == 4) {
+  if (currentBlade2State >= 4) {
     if (now - blade2Timer > bladeRetractTime) {
       currentBlade2State = 0;
     }
