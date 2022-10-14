@@ -13,13 +13,6 @@ int lastButton2State = HIGH;
 int currentBlade1State = 0;
 int currentBlade2State = 0;
 
-//define blade states
-#define bladeRetracted 0
-#define bladeExtend 1
-#define bladeRetract 2
-#define bladeRetractDelay 3
-#define bladeRetracting 4
-
 const unsigned long debounceDuration = 20; // This controls button debounce duration. 
 const unsigned long bladeRetractTime = 300; // adjust this if we're stabbing produce. @jairus 
 const unsigned long bladeSoldDelay = 100; // This controls how long till we switch between the extending solenoid and the retracting solenoid. 
@@ -70,10 +63,10 @@ void loop() {
       // only toggle the blade if the new button state is LOW
       if (button1State == LOW) {
         //UPDATE BLADE STATE MACHINE HERE...
-        if (currentBlade1State == bladeRetracted) {
-          currentBlade1State = bladeExtend;
+        if (currentBlade1State == 0) {
+          currentBlade1State = 1;
         } else {
-          currentBlade1State = bladeRetract;
+          currentBlade1State = 2;
         }
       }
     }
@@ -91,10 +84,10 @@ void loop() {
       // only toggle the blade if the new button state is LOW
       if (button2State == LOW) {
         //UPDATE BLADE STATE MACHINE HERE...
-        if (currentBlade2State == bladeRetracted) {
-          currentBlade2State = bladeExtend;
+        if (currentBlade2State == 0) {
+          currentBlade2State = 1;
         } else {
-          currentBlade2State = bladeRetract;
+          currentBlade2State = 2;
         }
       }
     }
@@ -102,53 +95,53 @@ void loop() {
   lastButton2State = b2reading;
   
   //Blade1 State Machine
-  if (currentBlade1State == bladeRetracting) {
+  if (currentBlade1State == 4) {
     if (now - blade1Timer > bladeRetractTime) {
-      currentBlade1State = bladeRetracted;
+      currentBlade1State = 0;
     }
   }
-  if (currentBlade1State == bladeRetractDelay) {
+  if (currentBlade1State == 3) {
     if (now - blade1SolTS > bladeSoldDelay) {
         digitalWrite(blade1Sol2OutPin, LOW);
         blade1Timer = now;
-        currentBlade1State = bladeRetracting;
+        currentBlade1State = 4;
       }
   }
-  if (currentBlade1State == bladeRetract) {
+  if (currentBlade1State == 2) {
       digitalWrite(blade1Sol1OutPin, HIGH);
       blade1SolTS = now;
-      currentBlade1State = bladeRetractDelay;
+      currentBlade1State = 3;
   }
-  if (currentBlade1State == bladeExtend) {
+  if (currentBlade1State == 1) {
     digitalWrite(blade1Sol1OutPin, LOW);
   }
-  if (currentBlade1State == bladeRetracted) {
+  if (currentBlade1State == 0) {
     digitalWrite(blade1Sol1OutPin, HIGH);
     digitalWrite(blade1Sol2OutPin, HIGH);
   }
   
   //Blade2 State Machine
-  if (currentBlade2State == bladeRetracting) {
+  if (currentBlade2State == 4) {
     if (now - blade2Timer > bladeRetractTime) {
-      currentBlade2State = bladeRetracted;
+      currentBlade2State = 0;
     }
   }
-  if (currentBlade2State == bladeRetractDelay) {
+  if (currentBlade2State == 3) {
     if (now - blade2SolTS > bladeSoldDelay) {
         digitalWrite(blade2Sol2OutPin, LOW);
         blade2Timer = now;
-        currentBlade2State = bladeRetracting;
+        currentBlade2State = 4;
       }
   }
-  if (currentBlade2State == bladeRetract) {
+  if (currentBlade2State == 2) {
       digitalWrite(blade2Sol1OutPin, HIGH);
       blade2SolTS = now;
-      currentBlade2State = bladeRetractDelay;
+      currentBlade2State = 3;
   }
-  if (currentBlade2State == bladeExtend) {
+  if (currentBlade2State == 1) {
     digitalWrite(blade2Sol1OutPin, LOW);
   }
-  if (currentBlade2State == bladeRetracted) {
+  if (currentBlade2State == 0) {
     digitalWrite(blade2Sol1OutPin, HIGH);
     digitalWrite(blade2Sol2OutPin, HIGH);
   }
