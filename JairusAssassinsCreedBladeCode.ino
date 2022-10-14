@@ -33,11 +33,6 @@ unsigned long blade2SolTS = 0;
 unsigned long blade1Timer = 0;
 unsigned long blade2Timer = 0;
 
-bool blade1Delayed = false;
-bool blade2Delayed = false;
-
-
-
 void setup() {
   pinMode(blade1Sol1OutPin, OUTPUT);
   pinMode(blade1Sol2OutPin, OUTPUT);
@@ -77,7 +72,7 @@ void loop() {
         //UPDATE BLADE STATE MACHINE HERE...
         if (currentBlade1State == bladeRetracted) {
           currentBlade1State = bladeExtend;
-        } else if (currentBlade1State == bladeExtend) {
+        } else {
           currentBlade1State = bladeRetract;
         }
       }
@@ -98,105 +93,63 @@ void loop() {
         //UPDATE BLADE STATE MACHINE HERE...
         if (currentBlade2State == bladeRetracted) {
           currentBlade2State = bladeExtend;
-        } else if (currentBlade2State == bladeExtend) {
+        } else {
           currentBlade2State = bladeRetract;
         }
       }
     }
   }
   lastButton2State = b2reading;
-
-  switch (currentBlade1State) {
-    case bladeRetracted:
-      digitalWrite(blade1Sol1OutPin, LOW);
-      digitalWrite(blade1Sol2OutPin, LOW);
-      break;
-    case bladeExtend:
-      digitalWrite(blade1Sol1OutPin, HIGH);
-      break;
-    case bladeRetract:
-      //Turn off sol extending blade
-      digitalWrite(blade1Sol1OutPin, LOW);
-      // retract blade
-      blade1SolTS = now;
-      currentBlade1State = 3;
-    case bladeRetractDelay:
-      if (now - blade1SolTS > bladeSoldDelay) {
-        digitalWrite(blade1Sol2OutPin, HIGH);
+  
+  //Blade1 State Machine
+  if (currentBlade1State == bladeRetracting) {
+    if (now - blade1Timer > bladeRetractTime) {
+      currentBlade1State = bladeRetracted;
+    }
+  }
+  if (currentBlade1State == bladeRetractDelay) {
+    if (now - blade1SolTS > bladeSoldDelay) {
+        digitalWrite(blade1Sol2OutPin, LOW);
         blade1Timer = now;
-        currentBlade1State = 4;
-        blade1Delayed = false;
+        currentBlade1State = bladeRetracting;
       }
-      break;
-    case bladeRetracting:
-      if (now - blade1Timer > bladeRetractTime) {
-        currentBlade1State = 0;
-      }
-      break;
   }
-
-  switch (currentBlade2State) {
-    case bladeRetracted:
-      digitalWrite(blade2Sol1OutPin, LOW);
-      digitalWrite(blade2Sol2OutPin, LOW);
-      break;
-    case bladeExtend:
-      digitalWrite(blade2Sol1OutPin, HIGH);
-      break;
-    case bladeRetract:
-      //Turn off sol extending blade
-      digitalWrite(blade2Sol1OutPin, LOW);
-      blade2SolTS = now;
-      currentBlade2State = 3;
-    case bladeRetractDelay:
+  if (currentBlade1State == bladeRetract) {
+      digitalWrite(blade1Sol1OutPin, HIGH);
+      blade1SolTS = now;
+      currentBlade1State = bladeRetractDelay;
+  }
+  if (currentBlade1State == bladeExtend) {
+    digitalWrite(blade1Sol1OutPin, LOW);
+  }
+  if (currentBlade1State == bladeRetracted) {
+    digitalWrite(blade1Sol1OutPin, HIGH);
+    digitalWrite(blade1Sol2OutPin, HIGH);
+  }
+  
+  //Blade2 State Machine
+  if (currentBlade2State == bladeRetracting) {
+    if (now - blade2Timer > bladeRetractTime) {
+      currentBlade2State = bladeRetracted;
+    }
+  }
+  if (currentBlade2State == bladeRetractDelay) {
     if (now - blade2SolTS > bladeSoldDelay) {
-      // retract blade
-      digitalWrite(blade2Sol2OutPin, HIGH);
-      blade2Timer = now;
-      currentBlade2State = 4;
-    }
-      break;
-    case bladeRetracting:
-      if (now - blade2Timer > bladeRetractTime) {
-        currentBlade2State = 0;
+        digitalWrite(blade2Sol2OutPin, LOW);
+        blade2Timer = now;
+        currentBlade2State = bladeRetracting;
       }
-      break;
   }
-
-
-  /*
-  //check for button press, add debounce check
-  buttonState = digitalRead(buttonPin);
-  //check debounce - current time minus previous timestamp (duration since last timestamp) > duration
-  if (millis() - debounceTimeStamp > debounceDuration) {
-    //if button is pressed
-    if (buttonState != lastButtonState) {
-      //bank current button state
-      lastButtonState = buttonState;
-      // TimeStamp for button state change
-      debounceTimeStamp = millis();
-      // If button is depressed
-      if (buttonState == LOW) {
-        switch (currentBladeState) {
-          case bladeExtend:
-            digitalWrite(sol1OutPin, HIGH);
-            currentBladeState++;
-            break;
-          case bladeRetract:
-            //Turn off sol extending blade
-            digitalWrite(sol1OutPin, LOW);
-            // retract blade
-            digitalWrite(sol2OutPin, HIGH);
-            //Delay can be rewritten as a timer
-            delay(200); 
-            //Sol off
-            digitalWrite(sol2OutPin, LOW);
-            //reset state
-            currentBladeState = 0;           
-            break;
-        }        
-      }
-    }
+  if (currentBlade2State == bladeRetract) {
+      digitalWrite(blade2Sol1OutPin, HIGH);
+      blade2SolTS = now;
+      currentBlade2State = bladeRetractDelay;
   }
-  */
+  if (currentBlade2State == bladeExtend) {
+    digitalWrite(blade2Sol1OutPin, LOW);
+  }
+  if (currentBlade2State == bladeRetracted) {
+    digitalWrite(blade2Sol1OutPin, HIGH);
+    digitalWrite(blade2Sol2OutPin, HIGH);
+  }
 }
