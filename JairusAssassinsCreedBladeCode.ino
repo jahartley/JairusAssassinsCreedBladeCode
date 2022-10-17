@@ -6,10 +6,10 @@
 #define btStPin 7
 
 
-int boState = HIGH;
-int btState = HIGH;
-int lBoState = HIGH;
-int lBtState = HIGH;
+int boState = 1;
+int btState = 1;
+int lBoState = 1;
+int lBtState = 1;
 int cBoState = 0;
 int cBtState = 0;
 
@@ -61,7 +61,7 @@ void loop() {
       boState = boReading;
 
       // only toggle the blade if the new button state is LOW
-      if (boState == LOW) {
+      if (boState == 0) {
         //UPDATE BLADE STATE MACHINE HERE...
         if (cBoState == 0) {
           cBoState = 1;
@@ -82,7 +82,7 @@ void loop() {
       btState = btReading;
 
       // only toggle the blade if the new button state is LOW
-      if (btState == LOW) {
+      if (btState == 0) {
         //UPDATE BLADE STATE MACHINE HERE...
         if (cBtState == 0) {
           cBtState = 1;
@@ -102,22 +102,22 @@ void loop() {
   }
   if (cBoState == 3) {
     if ((millis() - boSolTs) > bSDelay) {
-        digitalWrite(boStPin, LOW);
+        digitalWrite(boStPin, 0);
         boTs = millis();
         cBoState = 4;
       }
   }
   if (cBoState == 2) {
-      digitalWrite(boSoPin, HIGH);
+      digitalWrite(boSoPin, 1);
       boSolTs = millis();
       cBoState = 3;
   }
   if (cBoState == 1) {
-    digitalWrite(boSoPin, LOW);
+    digitalWrite(boSoPin, 0);
   }
   if (cBoState == 0) {
-    digitalWrite(boSoPin, HIGH);
-    digitalWrite(boStPin, HIGH);
+    digitalWrite(boSoPin, 1);
+    digitalWrite(boStPin, 1);
   }
   
   //Blade2 State Machine
@@ -128,21 +128,21 @@ void loop() {
   }
   if (cBtState == 3) {
     if ((millis() - btSolTs) > bSDelay) {
-        digitalWrite(btStPin, LOW);
+        digitalWrite(btStPin, 0);
         btTs = millis();
         cBtState = 4;
       }
   }
   if (cBtState == 2) {
-      digitalWrite(btSoPin, HIGH);
+      digitalWrite(btSoPin, 1);
       btSolTs = millis();
       cBtState = 3;
   }
   if (cBtState == 1) {
-    digitalWrite(btSoPin, LOW);
+    digitalWrite(btSoPin, 0);
   }
   if (cBtState == 0) {
-    digitalWrite(btSoPin, HIGH);
-    digitalWrite(btStPin, HIGH);
+    digitalWrite(btSoPin, 1);
+    digitalWrite(btStPin, 1);
   }
 }
