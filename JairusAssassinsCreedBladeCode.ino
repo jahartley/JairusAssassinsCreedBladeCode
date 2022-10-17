@@ -45,14 +45,14 @@ void loop() {
 
   if (boReading != lBoState) {
     // reset the debouncing timer
-    debounceTsO = now;
+    debounceTsO = millis();
   }
   if (btReading != lBtState) {
     // reset the debouncing timer
-    debounceTsT = now;
+    debounceTsT = millis();
   }
 
-  if ((now - debounceTsO) > debD) {
+  if ((millis() - debounceTsO) > debD) {
     // whatever the reading is at, it's been there for longer than the debounce
     // delay, so take it as the actual current state:
 
@@ -73,7 +73,7 @@ void loop() {
   }
   lBoState = boReading;
 
-  if ((now - debounceTsT) > debD) {
+  if ((millis() - debounceTsT) > debD) {
     // whatever the reading is at, it's been there for longer than the debounce
     // delay, so take it as the actual current state:
 
@@ -96,20 +96,20 @@ void loop() {
   
   //Blade1 State Machine
   if (cBoState >= 4) {
-    if ((now - boTs) > bRetractTime) {
+    if ((millis() - boTs) > bRetractTime) {
       cBoState = 0;
     }
   }
   if (cBoState == 3) {
-    if ((now - boSolTs) > bSDelay) {
+    if ((millis() - boSolTs) > bSDelay) {
         digitalWrite(boStPin, LOW);
-        boTs = now;
+        boTs = millis();
         cBoState = 4;
       }
   }
   if (cBoState == 2) {
       digitalWrite(boSoPin, HIGH);
-      boSolTs = now;
+      boSolTs = millis();
       cBoState = 3;
   }
   if (cBoState == 1) {
@@ -122,20 +122,20 @@ void loop() {
   
   //Blade2 State Machine
   if (cBtState >= 4) {
-    if ((now - btTs) > bRetractTime) {
+    if ((millis() - btTs) > bRetractTime) {
       cBtState = 0;
     }
   }
   if (cBtState == 3) {
-    if ((now - btSolTs) > bSDelay) {
+    if ((millis() - btSolTs) > bSDelay) {
         digitalWrite(btStPin, LOW);
-        btTs = now;
+        btTs = millis();
         cBtState = 4;
       }
   }
   if (cBtState == 2) {
       digitalWrite(btSoPin, HIGH);
-      btSolTs = now;
+      btSolTs = millis();
       cBtState = 3;
   }
   if (cBtState == 1) {
